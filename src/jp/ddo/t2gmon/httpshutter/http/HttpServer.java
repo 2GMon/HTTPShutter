@@ -73,6 +73,49 @@ public class HttpServer extends Thread {
 		private final int bufferSize = 2000;
 		private Socket socket;
 		
+		// リクエストされたPATHを返す
+		private String getReceivedPath(InputStream inputStream) {
+			byte buffer[] = new byte[bufferSize];
+			StringBuffer recvMessage = new StringBuffer();
+			StringBuffer path = new StringBuffer();
+			
+			// headerの最後はCR/LF/CR/CFのはずなので，一文字ずつ見ていく
+			int i = 0;
+			while (true) {
+				try {
+					int c = inputStream.read();
+					if (c < 0) {
+						throw new Exception();
+					}
+					buffer[i] = (byte)c;
+					if (i > 3 &&buffer[i - 3] == '\r' && buffer[i - 2] == '\n' && buffer[i - 1] == '\r' && buffer[i] == '\n') {
+						recvMessage.append(new String(buffer, "UTF-8"));
+						break;
+					}
+					else if (i == bufferSize - 1) {
+						throw new Exception();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				i++;
+			}
+
+			// recvMessageからPATHのみ取り出す
+			i = 0;
+			while (true) {
+				if (recvMessage.charAt(i) == '\r' && recvMessage.charAt(i + 1) == '\n') {
+					break;
+				}
+				else {
+					path.append(recvMessage.charAt(i));
+				}
+				i++;
+			}
+			
+			return path.toString().split(" ")[1];
+		}
+
 		// ヘッダのみのレスポンスを返す
 		private void responseHeader(int status, String message, PrintStream printStream) {
 			printStream.println("HTTP/1.0 " + status + " " + message);
@@ -87,30 +130,12 @@ public class HttpServer extends Thread {
 		public void run() {
 			InputStream inputStream = null;
 			PrintStream printStream = null;
-			byte buffer[] = new byte[bufferSize];
-			StringBuffer recvMessage = new StringBuffer();
 
 			Log.v("httpshutter_ServerProcess", "ServerProcess start.");
 			try {
 				inputStream = socket.getInputStream();
-				// headerの最後はCR/LF/CR/CFのはずなので，一文字ずつ見ていく
-				int i = 0;
-				while (true) {
-					int c = inputStream.read();
-					if (c < 0) {
-						throw new Exception();
-					}
-					buffer[i] = (byte)c;
-					if (i > 3 &&buffer[i - 3] == '\r' && buffer[i - 2] == '\n' && buffer[i - 1] == '\r' && buffer[i] == '\n') {
-						recvMessage.append(new String(buffer, "UTF-8"));
-						break;
-					}
-					else if (i == bufferSize - 1) {
-						throw new Exception();
-					}
-					i++;
-				}
-				Log.v("httpshutther_server", "Recived: " + recvMessage);
+				
+				Log.v("httpshutther_server", "Received Path: " + getReceivedPath(inputStream));
 
 				printStream = new PrintStream(socket.getOutputStream());
 				responseHeader(201,"OKOK", printStream);
