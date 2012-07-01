@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 public class HTTPshutterActivity extends Activity {
 	private HttpServer server = null;
+	private CameraView cameraView = null;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -17,10 +18,11 @@ public class HTTPshutterActivity extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+		cameraView = new CameraView(this);
 		LinearLayout l = new LinearLayout(this);
-		l.addView(new CameraView(this));
+		l.addView(cameraView);
         setContentView(l);
-        server = new HttpServer(this);
+        server = new HttpServer(this, cameraView);
         server.start();
     }
 
