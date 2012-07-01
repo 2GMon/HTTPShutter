@@ -6,12 +6,14 @@ import java.util.List;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
-import android.os.Build;
+import android.hardware.Camera.PictureCallback;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
-public class CameraView extends SurfaceView implements Callback {
+public class CameraView extends SurfaceView implements Callback, PictureCallback {
 	private Camera camera;
 
 	public CameraView(Context context) {
@@ -31,7 +33,11 @@ public class CameraView extends SurfaceView implements Callback {
 			camera.setDisplayOrientation(0);
 		}
 		List<Camera.Size> supportedSizes = parameters.getSupportedPreviewSizes();
-		Camera.Size previewSize = supportedSizes.get(0); // サポートされている最大のプレビューサイズを取得
+		for (int i = 0; i < supportedSizes.size(); i++) {
+			Camera.Size tsize = supportedSizes.get(i);
+			Log.v("httpshutter_Camera", "Width: " + tsize.width +", Height: " + tsize.height);
+		}
+		Camera.Size previewSize = supportedSizes.get(0);
 		parameters.setPreviewSize(previewSize.width, previewSize.height);
 		camera.setParameters(parameters);
 		camera.startPreview();
@@ -50,4 +56,14 @@ public class CameraView extends SurfaceView implements Callback {
 		camera.release();
 	}
 
+	public void onPictureTaken(byte[] arg0, Camera arg1) {
+		camera.startPreview();
+	}
+
+	public boolean onTouchEvent(MotionEvent me) {
+		if(me.getAction() == MotionEvent.ACTION_DOWN) {
+			camera.takePicture(null, null, this);
+		}
+		return true;
+	}
 }
