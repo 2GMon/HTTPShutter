@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.util.Log;
@@ -14,6 +16,8 @@ import android.view.SurfaceView;
 
 public class CameraView extends SurfaceView implements Callback, PictureCallback {
 	private Camera camera;
+	private Bitmap bmp = null;
+	private boolean bmpGenerated = false;
 
 	public CameraView(Context context) {
 		super(context);
@@ -55,12 +59,32 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		camera.release();
 	}
 
-	public void onPictureTaken(byte[] arg0, Camera arg1) {
+	public void onPictureTaken(byte[] data, Camera arg1) {
+		bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+		bmpGenerated = true;
 		camera.startPreview();
 	}
 
 	public boolean httpShutter() {
+		bmpGenerated = false;
 		camera.takePicture(null, null, this);
 		return true;
+	}
+
+	public Bitmap getBitmap() {
+		return bmp;
+	}
+
+	public void clearBitmap() {
+		bmp = null;
+		bmpGenerated = false;
+	}
+
+	public boolean getBitmapGenerated() {
+		return bmpGenerated;
+	}
+
+	public void setBitmapGenerated(boolean bool) {
+		bmpGenerated = bool;
 	}
 }

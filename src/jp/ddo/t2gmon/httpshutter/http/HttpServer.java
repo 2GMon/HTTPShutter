@@ -1,5 +1,7 @@
 package jp.ddo.t2gmon.httpshutter.http;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
@@ -9,6 +11,8 @@ import java.net.Socket;
 import jp.ddo.t2gmon.httpshutter.CameraView;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.util.Log;
 
 public class HttpServer extends Thread {
@@ -127,6 +131,17 @@ public class HttpServer extends Thread {
 			printStream.flush();
 		}
 
+		// Content-Typeありのレスポンスを返す
+		private void responseLenType(int status, String message, String type, PrintStream printStream) {
+			printStream.println("HTTP/1.0 " + status + " " + message);
+			printStream.println("Accept-Ranges: bytes");
+			printStream.println("Connection: close");
+			printStream.print("Content-Type: ");
+			printStream.println(type);
+			printStream.println();
+			printStream.flush();
+		}
+
 		public ServerProcess(Socket socket) {
 			this.socket = socket;
 		}
@@ -140,13 +155,22 @@ public class HttpServer extends Thread {
 				inputStream = socket.getInputStream();
 				
 				String path = getReceivedPath(inputStream);
+				printStream = new PrintStream(socket.getOutputStream());
 				if (path.equals("/photo.jpg")) {
 					cameraView.httpShutter();
+					while (!cameraView.getBitmapGenerated()) {
+					}
+					Bitmap bmp = cameraView.getBitmap();
+					responseLenType(200, "OK", "image/jpeg", printStream);
+					bmp.compress(CompressFormat.JPEG, 100, printStream);
+					cameraView.clearBitmap();
 				}
-				Log.v("httpshutther_server", "Received Path: " + path);
+				else {
+					Log.v("httpshutther_server", "Received Path: " + path);
 
-				printStream = new PrintStream(socket.getOutputStream());
-				responseHeader(201,"OKOK", printStream);
+					responseHeader(200,"OK", printStream);
+					printStream.println("a");
+				}
                 socket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
