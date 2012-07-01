@@ -6,15 +6,19 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import jp.ddo.t2gmon.httpshutter.CameraView;
+
 import android.content.Context;
 import android.util.Log;
 
 public class HttpServer extends Thread {
 	private Context context;
 	private ServerSocket serverSocket = null;
+	private CameraView cameraView = null;
 
-	public HttpServer(Context context) {
+	public HttpServer(Context context, CameraView cameraView) {
 		this.context = context;
+		this.cameraView = cameraView;
 	}
 	
 	public void run() {
@@ -135,7 +139,11 @@ public class HttpServer extends Thread {
 			try {
 				inputStream = socket.getInputStream();
 				
-				Log.v("httpshutther_server", "Received Path: " + getReceivedPath(inputStream));
+				String path = getReceivedPath(inputStream);
+				if (path.equals("/photo.jpg")) {
+					cameraView.httpShutter();
+				}
+				Log.v("httpshutther_server", "Received Path: " + path);
 
 				printStream = new PrintStream(socket.getOutputStream());
 				responseHeader(201,"OKOK", printStream);

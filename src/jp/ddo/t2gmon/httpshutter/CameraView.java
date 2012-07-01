@@ -8,7 +8,6 @@ import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -60,10 +59,8 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		camera.startPreview();
 	}
 
-	public boolean onTouchEvent(MotionEvent me) {
-		if(me.getAction() == MotionEvent.ACTION_DOWN) {
-			camera.takePicture(null, null, this);
-		}
+	public boolean httpShutter() {
+		camera.takePicture(null, null, this);
 		return true;
 	}
 }
