@@ -6,12 +6,14 @@ import java.util.List;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
-public class CameraView extends SurfaceView implements Callback {
+public class CameraView extends SurfaceView implements Callback, PictureCallback {
 	private Camera camera;
 
 	public CameraView(Context context) {
@@ -54,4 +56,14 @@ public class CameraView extends SurfaceView implements Callback {
 		camera.release();
 	}
 
+	public void onPictureTaken(byte[] arg0, Camera arg1) {
+		camera.startPreview();
+	}
+
+	public boolean onTouchEvent(MotionEvent me) {
+		if(me.getAction() == MotionEvent.ACTION_DOWN) {
+			camera.takePicture(null, null, this);
+		}
+		return true;
+	}
 }
