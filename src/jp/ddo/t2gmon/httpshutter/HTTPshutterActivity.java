@@ -3,6 +3,9 @@ package jp.ddo.t2gmon.httpshutter;
 import jp.ddo.t2gmon.httpshutter.http.HttpServer;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -25,6 +28,27 @@ public class HTTPshutterActivity extends Activity {
         server = new HttpServer(this, cameraView);
         server.start();
     }
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.clear();
+		super.onPrepareOptionsMenu(menu);
+		SubMenu previewSize = menu.addSubMenu("Preview Size");
+		
+		previewSize.add(Menu.NONE, 10, 0, "1");
+		previewSize.add(Menu.NONE, 11, 0, "2");
+
+		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch(item.getItemId()) {
+		default:
+			break;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onPause()
