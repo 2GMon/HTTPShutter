@@ -18,6 +18,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 	private Camera camera;
 	private Bitmap bmp = null;
 	private boolean bmpGenerated = false;
+	private List<Camera.Size> supportedPreviewSize = null;
 
 	public CameraView(Context context) {
 		super(context);
@@ -35,12 +36,8 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		} else {
 			camera.setDisplayOrientation(0);
 		}
-		List<Camera.Size> supportedSizes = parameters.getSupportedPreviewSizes();
-		for (int i = 0; i < supportedSizes.size(); i++) {
-			Camera.Size tsize = supportedSizes.get(i);
-			Log.v("httpshutter_Camera", "Width: " + tsize.width +", Height: " + tsize.height);
-		}
-		Camera.Size previewSize = supportedSizes.get(0);
+		supportedPreviewSize = parameters.getSupportedPreviewSizes();
+		Camera.Size previewSize = supportedPreviewSize.get(0);
 		parameters.setPreviewSize(previewSize.width, previewSize.height);
 		camera.setParameters(parameters);
 		camera.startPreview();
@@ -87,5 +84,17 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 
 	public void setBitmapGenerated(boolean bool) {
 		bmpGenerated = bool;
+	}
+
+	public List<Camera.Size> getSupportedPreviewSize() {
+		return supportedPreviewSize;
+	}
+
+	public void setPreviewSize(int width, int height) {
+		camera.stopPreview();
+		Camera.Parameters parameters = camera.getParameters();
+		parameters.setPreviewSize(width, height);
+		camera.setParameters(parameters);
+		camera.startPreview();
 	}
 }

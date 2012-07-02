@@ -1,8 +1,12 @@
 package jp.ddo.t2gmon.httpshutter;
 
+import java.util.List;
+
 import jp.ddo.t2gmon.httpshutter.http.HttpServer;
 import android.app.Activity;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -13,6 +17,7 @@ import android.widget.LinearLayout;
 public class HTTPshutterActivity extends Activity {
 	private HttpServer server = null;
 	private CameraView cameraView = null;
+	private int numOfSupportedPreviewSize;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,19 +38,24 @@ public class HTTPshutterActivity extends Activity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
 		super.onPrepareOptionsMenu(menu);
-		SubMenu previewSize = menu.addSubMenu("Preview Size");
-		
-		previewSize.add(Menu.NONE, 10, 0, "1");
-		previewSize.add(Menu.NONE, 11, 0, "2");
+
+		SubMenu previewSize = menu.addSubMenu(Menu.NONE, 1, 0, "Preview Size");
+		List<Camera.Size> supportedPreviewSize = cameraView.getSupportedPreviewSize();
+		numOfSupportedPreviewSize = supportedPreviewSize.size();
+		for (int i = 0; i < supportedPreviewSize.size(); i++) {
+			Camera.Size tmpSize = supportedPreviewSize.get(i);
+			previewSize.add(Menu.NONE, 10 + i, 0, tmpSize.width + " x " + tmpSize.height);
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch(item.getItemId()) {
-		default:
-			break;
+		int itemId = item.getItemId();
+		if (10 <= itemId && itemId < 10 + numOfSupportedPreviewSize) {
+			Camera.Size tmpSize = cameraView.getSupportedPreviewSize().get(itemId - 10);
+			cameraView.setPreviewSize(tmpSize.width, tmpSize.height);
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
