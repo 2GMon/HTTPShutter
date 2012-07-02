@@ -19,6 +19,7 @@ public class HTTPshutterActivity extends Activity {
 	private CameraView cameraView = null;
 	private int numOfSupportedPreviewSize;
 	private int numOfSupportedPictureSize;
+	private int numOfSupportedFlashMode;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,14 @@ public class HTTPshutterActivity extends Activity {
 			Camera.Size tmpSize = supportedPictureSize.get(i);
 			pictureSize.add(Menu.NONE, 10 + numOfSupportedPreviewSize + i, 0, tmpSize.width + " x " + tmpSize.height);
 		}
+		SubMenu flashMode = menu.addSubMenu(Menu.NONE, 3, 0, "Flash Mode");
+		List<String> supportedFlashMode = cameraView.getSupportedFlashMode();
+		numOfSupportedFlashMode = supportedFlashMode.size();
+		for (int i = 0; i < supportedFlashMode.size(); i++) {
+			String tmpFlashMode = supportedFlashMode.get(i);
+			flashMode.add(Menu.NONE, 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize + i,
+					0, tmpFlashMode);
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -70,6 +79,12 @@ public class HTTPshutterActivity extends Activity {
 				&& itemId < 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize) {
 			Camera.Size tmpSize = cameraView.getSupportedPictureSize().get(itemId - 10 - numOfSupportedPreviewSize);
 			cameraView.setPictureSize(tmpSize.width, tmpSize.height);
+		}
+		else if (10 + numOfSupportedPreviewSize + numOfSupportedPictureSize <= itemId
+				&& itemId < 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize + numOfSupportedFlashMode) {
+			String tmpFlashMode = cameraView.getSupportedFlashMode().get(itemId - 10
+					- numOfSupportedPreviewSize - numOfSupportedPictureSize);
+			cameraView.setFlashMode(tmpFlashMode);
 		}
 		else if (itemId == 0) {
 			cameraView.doAutofocus();

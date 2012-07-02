@@ -20,6 +20,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 	private boolean bmpGenerated = false;
 	private List<Camera.Size> supportedPreviewSize = null;
 	private List<Camera.Size> supportedPictureSize = null;
+	private List<String> supportedFlashMode = null;
 
 	public CameraView(Context context) {
 		super(context);
@@ -39,6 +40,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		}
 		supportedPreviewSize = parameters.getSupportedPreviewSizes();
 		supportedPictureSize = camera.getParameters().getSupportedPictureSizes();
+		supportedFlashMode = parameters.getSupportedFlashModes();
 		Camera.Size previewSize = supportedPreviewSize.get(0);
 		parameters.setPreviewSize(previewSize.width, previewSize.height);
 		camera.setParameters(parameters);
@@ -96,6 +98,10 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		return supportedPictureSize;
 	}
 
+	public List<String> getSupportedFlashMode() {
+		return supportedFlashMode;
+	}
+
 	public void setPreviewSize(int width, int height) {
 		camera.stopPreview();
 		Camera.Parameters parameters = camera.getParameters();
@@ -108,6 +114,14 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		Camera.Parameters parameters = camera.getParameters();
 		parameters.setPictureSize(width, height);
 		camera.setParameters(parameters);
+	}
+
+	public void setFlashMode(String flashMode) {
+		camera.stopPreview();
+		Camera.Parameters parameters = camera.getParameters();
+		parameters.setFlashMode(flashMode);
+		camera.setParameters(parameters);
+		camera.startPreview();
 	}
 
 	public void doAutofocus() {
