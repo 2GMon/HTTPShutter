@@ -97,4 +97,8 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		camera.setParameters(parameters);
 		camera.startPreview();
 	}
+
+	public void doAutofocus() {
+		camera.autoFocus(null);
+	}
 }

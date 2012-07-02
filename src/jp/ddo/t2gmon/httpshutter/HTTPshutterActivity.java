@@ -39,6 +39,7 @@ public class HTTPshutterActivity extends Activity {
 		menu.clear();
 		super.onPrepareOptionsMenu(menu);
 
+		menu.add(Menu.NONE, 0, 0, "Auto Focus");
 		SubMenu previewSize = menu.addSubMenu(Menu.NONE, 1, 0, "Preview Size");
 		List<Camera.Size> supportedPreviewSize = cameraView.getSupportedPreviewSize();
 		numOfSupportedPreviewSize = supportedPreviewSize.size();
@@ -56,6 +57,9 @@ public class HTTPshutterActivity extends Activity {
 		if (10 <= itemId && itemId < 10 + numOfSupportedPreviewSize) {
 			Camera.Size tmpSize = cameraView.getSupportedPreviewSize().get(itemId - 10);
 			cameraView.setPreviewSize(tmpSize.width, tmpSize.height);
+		}
+		else if (itemId == 0) {
+			cameraView.doAutofocus();
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
