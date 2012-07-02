@@ -19,6 +19,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 	private Bitmap bmp = null;
 	private boolean bmpGenerated = false;
 	private List<Camera.Size> supportedPreviewSize = null;
+	private List<Camera.Size> supportedPictureSize = null;
 
 	public CameraView(Context context) {
 		super(context);
@@ -37,6 +38,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 			camera.setDisplayOrientation(0);
 		}
 		supportedPreviewSize = parameters.getSupportedPreviewSizes();
+		supportedPictureSize = camera.getParameters().getSupportedPictureSizes();
 		Camera.Size previewSize = supportedPreviewSize.get(0);
 		parameters.setPreviewSize(previewSize.width, previewSize.height);
 		camera.setParameters(parameters);
@@ -90,12 +92,22 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		return supportedPreviewSize;
 	}
 
+	public List<Camera.Size> getSupportedPictureSize() {
+		return supportedPictureSize;
+	}
+
 	public void setPreviewSize(int width, int height) {
 		camera.stopPreview();
 		Camera.Parameters parameters = camera.getParameters();
 		parameters.setPreviewSize(width, height);
 		camera.setParameters(parameters);
 		camera.startPreview();
+	}
+
+	public void setPictureSize(int width, int height) {
+		Camera.Parameters parameters = camera.getParameters();
+		parameters.setPictureSize(width, height);
+		camera.setParameters(parameters);
 	}
 
 	public void doAutofocus() {

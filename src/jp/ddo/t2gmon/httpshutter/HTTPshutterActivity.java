@@ -18,6 +18,7 @@ public class HTTPshutterActivity extends Activity {
 	private HttpServer server = null;
 	private CameraView cameraView = null;
 	private int numOfSupportedPreviewSize;
+	private int numOfSupportedPictureSize;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,13 @@ public class HTTPshutterActivity extends Activity {
 			Camera.Size tmpSize = supportedPreviewSize.get(i);
 			previewSize.add(Menu.NONE, 10 + i, 0, tmpSize.width + " x " + tmpSize.height);
 		}
+		SubMenu pictureSize = menu.addSubMenu(Menu.NONE, 2, 0, "Picture Size");
+		List<Camera.Size> supportedPictureSize = cameraView.getSupportedPictureSize();
+		numOfSupportedPictureSize = supportedPictureSize.size();
+		for (int i = 0; i < supportedPictureSize.size(); i++) {
+			Camera.Size tmpSize = supportedPictureSize.get(i);
+			pictureSize.add(Menu.NONE, 10 + numOfSupportedPreviewSize + i, 0, tmpSize.width + " x " + tmpSize.height);
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}
@@ -57,6 +65,11 @@ public class HTTPshutterActivity extends Activity {
 		if (10 <= itemId && itemId < 10 + numOfSupportedPreviewSize) {
 			Camera.Size tmpSize = cameraView.getSupportedPreviewSize().get(itemId - 10);
 			cameraView.setPreviewSize(tmpSize.width, tmpSize.height);
+		}
+		else if (10 + numOfSupportedPreviewSize <= itemId
+				&& itemId < 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize) {
+			Camera.Size tmpSize = cameraView.getSupportedPictureSize().get(itemId - 10 - numOfSupportedPreviewSize);
+			cameraView.setPictureSize(tmpSize.width, tmpSize.height);
 		}
 		else if (itemId == 0) {
 			cameraView.doAutofocus();
