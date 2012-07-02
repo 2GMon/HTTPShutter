@@ -1,5 +1,6 @@
 package jp.ddo.t2gmon.httpshutter.http;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -84,7 +85,7 @@ public class HttpServer extends Thread {
 		// リクエストされたPATHを返す
 		private String getReceivedPath(InputStream inputStream) {
 			byte buffer[] = new byte[bufferSize];
-			StringBuffer recvMessage = new StringBuffer();
+			StringBuffer reqHeader = new StringBuffer();
 			StringBuffer path = new StringBuffer();
 			
 			// headerの最後はCR/LF/CR/CFのはずなので，一文字ずつ見ていく
@@ -97,7 +98,7 @@ public class HttpServer extends Thread {
 					}
 					buffer[i] = (byte)c;
 					if (i > 3 &&buffer[i - 3] == '\r' && buffer[i - 2] == '\n' && buffer[i - 1] == '\r' && buffer[i] == '\n') {
-						recvMessage.append(new String(buffer, "UTF-8"));
+						reqHeader.append(new String(buffer, "UTF-8"));
 						break;
 					}
 					else if (i == bufferSize - 1) {
@@ -112,11 +113,11 @@ public class HttpServer extends Thread {
 			// recvMessageからPATHのみ取り出す
 			i = 0;
 			while (true) {
-				if (recvMessage.charAt(i) == '\r' && recvMessage.charAt(i + 1) == '\n') {
+				if (reqHeader.charAt(i) == '\r' && reqHeader.charAt(i + 1) == '\n') {
 					break;
 				}
 				else {
-					path.append(recvMessage.charAt(i));
+					path.append(reqHeader.charAt(i));
 				}
 				i++;
 			}
@@ -124,17 +125,9 @@ public class HttpServer extends Thread {
 			return path.toString().split(" ")[1];
 		}
 
-		// ヘッダのみのレスポンスを返す
-		private void responseHeader(int status, String message, PrintStream printStream) {
-			printStream.println("HTTP/1.0 " + status + " " + message);
-			printStream.println("");
-			printStream.flush();
-		}
-
 		// Content-Typeありのレスポンスを返す
 		private void responseLenType(int status, String message, String type, PrintStream printStream) {
 			printStream.println("HTTP/1.0 " + status + " " + message);
-			printStream.println("Accept-Ranges: bytes");
 			printStream.println("Connection: close");
 			printStream.print("Content-Type: ");
 			printStream.println(type);
@@ -158,18 +151,21 @@ public class HttpServer extends Thread {
 				printStream = new PrintStream(socket.getOutputStream());
 				if (path.equals("/photo.jpg")) {
 					cameraView.httpShutter();
+					// cameraViewがBitmapを生成するのを待つ
 					while (!cameraView.getBitmapGenerated()) {
 					}
 					Bitmap bmp = cameraView.getBitmap();
 					responseLenType(200, "OK", "image/jpeg", printStream);
 					bmp.compress(CompressFormat.JPEG, 100, printStream);
+					// cameraViewのBitmapをクリアしておく Out of Memoryの危険性
 					cameraView.clearBitmap();
 				}
 				else {
 					Log.v("httpshutther_server", "Received Path: " + path);
 
-					responseHeader(200,"OK", printStream);
-					printStream.println("a");
+					printStream.println("HTTP/1.0 200 OK");
+					printStream.println();
+					printStream.flush();
 				}
                 socket.close();
 			} catch (Exception e) {
