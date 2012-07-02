@@ -67,6 +67,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 
 	public boolean httpShutter() {
 		bmpGenerated = false;
+		camera.autoFocus(null);
 		camera.takePicture(null, null, this);
 		return true;
 	}
