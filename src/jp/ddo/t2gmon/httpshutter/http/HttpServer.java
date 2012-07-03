@@ -1,8 +1,5 @@
 package jp.ddo.t2gmon.httpshutter.http;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
@@ -11,18 +8,15 @@ import java.net.Socket;
 
 import jp.ddo.t2gmon.httpshutter.CameraView;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.util.Log;
 
 public class HttpServer extends Thread {
-	private Context context;
 	private ServerSocket serverSocket = null;
 	private CameraView cameraView = null;
 
-	public HttpServer(Context context, CameraView cameraView) {
-		this.context = context;
+	public HttpServer(CameraView cameraView) {
 		this.cameraView = cameraView;
 	}
 	

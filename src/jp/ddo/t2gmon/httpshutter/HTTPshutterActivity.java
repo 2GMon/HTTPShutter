@@ -8,7 +8,6 @@ import android.hardware.Camera;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -35,7 +34,7 @@ public class HTTPshutterActivity extends Activity {
 		LinearLayout l = new LinearLayout(this);
 		l.addView(cameraView);
         setContentView(l);
-        server = new HttpServer(this, cameraView);
+        server = new HttpServer(cameraView);
         server.start();
     }
 
@@ -44,7 +43,6 @@ public class HTTPshutterActivity extends Activity {
 		menu.clear();
 		super.onPrepareOptionsMenu(menu);
 
-		menu.add(Menu.NONE, 0, 0, "Auto Focus");
 		SubMenu previewSize = menu.addSubMenu(Menu.NONE, 1, 0, "Preview Size");
 		List<Camera.Size> supportedPreviewSize = cameraView.getSupportedPreviewSize();
 		numOfSupportedPreviewSize = supportedPreviewSize.size();
@@ -67,12 +65,13 @@ public class HTTPshutterActivity extends Activity {
 			flashMode.add(Menu.NONE, 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize + i,
 					0, tmpFlashMode);
 		}
+		menu.add(Menu.NONE, 0, 0, "Auto Focus");
 
 		// 現在の設定情報
 		WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
 		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 		int ipAddress = wifiInfo.getIpAddress();
-		SubMenu preferences = menu.addSubMenu(Menu.NONE, 3, 0, "Preferences");
+		SubMenu preferences = menu.addSubMenu(Menu.NONE, 4, 0, "Preferences");
 		String strIPAddess = ((ipAddress >> 0) & 0xFF) + "." + ((ipAddress >> 8) & 0xFF) + "." +
 			    ((ipAddress >> 16) & 0xFF) + "." + ((ipAddress >> 24) & 0xFF);
 		preferences.add(Menu.NONE, 97, 0, strIPAddess + ":8080");
