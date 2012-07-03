@@ -84,8 +84,8 @@ public class HttpServer extends Thread {
 			
 			// headerの最後はCR/LF/CR/CFのはずなので，一文字ずつ見ていく
 			int i = 0;
-			while (true) {
-				try {
+			try {
+				while (true) {
 					int c = inputStream.read();
 					if (c < 0) {
 						throw new Exception();
@@ -98,10 +98,10 @@ public class HttpServer extends Thread {
 					else if (i == bufferSize - 1) {
 						throw new Exception();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					i++;
 				}
-				i++;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			// recvMessageからPATHのみ取り出す
