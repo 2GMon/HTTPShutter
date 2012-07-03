@@ -9,11 +9,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.hardware.Camera.AutoFocusCallback;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
-public class CameraView extends SurfaceView implements Callback, PictureCallback {
+public class CameraView extends SurfaceView implements Callback, PictureCallback, AutoFocusCallback {
 	private Camera camera;
 	private Bitmap bmp = null;
 	private boolean bmpGenerated = false;
@@ -67,8 +68,7 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 
 	public boolean httpShutter() {
 		bmpGenerated = false;
-		camera.autoFocus(null);
-		camera.takePicture(null, null, this);
+		camera.autoFocus(this);
 		return true;
 	}
 
@@ -133,5 +133,9 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 
 	public void doAutofocus() {
 		camera.autoFocus(null);
+	}
+
+	public void onAutoFocus(boolean success, Camera camera) {
+		camera.takePicture(null, null, this);
 	}
 }
