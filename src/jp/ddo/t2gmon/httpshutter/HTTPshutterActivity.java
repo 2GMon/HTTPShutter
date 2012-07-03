@@ -29,6 +29,7 @@ public class HTTPshutterActivity extends Activity {
         // フルスクリーンにして，タイトルも消す
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		cameraView = new CameraView(this);
 		LinearLayout l = new LinearLayout(this);
