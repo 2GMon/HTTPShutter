@@ -98,6 +98,14 @@ public class CameraView extends SurfaceView implements Callback, PictureCallback
 		return supportedPictureSize;
 	}
 
+	public Camera.Size getPreviewSize() {
+		return camera.getParameters().getPreviewSize();
+	}
+
+	public Camera.Size getPictureSize() {
+		return camera.getParameters().getPictureSize();
+	}
+
 	public List<String> getSupportedFlashMode() {
 		return supportedFlashMode;
 	}

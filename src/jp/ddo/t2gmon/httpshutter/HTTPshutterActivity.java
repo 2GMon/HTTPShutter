@@ -5,6 +5,8 @@ import java.util.List;
 import jp.ddo.t2gmon.httpshutter.http.HttpServer;
 import android.app.Activity;
 import android.hardware.Camera;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -64,6 +66,19 @@ public class HTTPshutterActivity extends Activity {
 			flashMode.add(Menu.NONE, 10 + numOfSupportedPreviewSize + numOfSupportedPictureSize + i,
 					0, tmpFlashMode);
 		}
+
+		// 現在の設定情報
+		WifiManager wifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+		WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+		int ipAddress = wifiInfo.getIpAddress();
+		SubMenu preferences = menu.addSubMenu(Menu.NONE, 3, 0, "Preferences");
+		String strIPAddess = ((ipAddress >> 0) & 0xFF) + "." + ((ipAddress >> 8) & 0xFF) + "." +
+			    ((ipAddress >> 16) & 0xFF) + "." + ((ipAddress >> 24) & 0xFF);
+		preferences.add(Menu.NONE, 97, 0, strIPAddess + ":8080");
+		Camera.Size cameraSize = cameraView.getPreviewSize();
+		preferences.add(Menu.NONE, 98, 0, "Preview Size: " + cameraSize.width + "x" + cameraSize.height);
+		cameraSize = cameraView.getPictureSize();
+		preferences.add(Menu.NONE, 99, 0, "Picture Size: " + cameraSize.width + "x" + cameraSize.height);
 
 		return super.onPrepareOptionsMenu(menu);
 	}
